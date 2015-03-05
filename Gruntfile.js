@@ -95,6 +95,7 @@ module.exports = function(grunt) {
 
     shell: {
       prodServer: {
+        command: 'git push azure master'
       }
     },
   });
@@ -109,6 +110,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-nodemon');
 
   grunt.registerTask('server-dev', function (target) {
+    grunt.task.requires('test');
     // Running nodejs in a different process and displaying output on the main console
     var nodemon = grunt.util.spawn({
          cmd: 'grunt',
@@ -125,19 +127,25 @@ module.exports = function(grunt) {
   // Main grunt tasks
   ////////////////////////////////////////////////////
 
-  grunt.registerTask('test', [
-    'mochaTest'
-  ]);
+  grunt.registerTask('test', ['mochaTest', 'jshint']);
 
   grunt.registerTask('build', ['concat','uglify','cssmin']);
 
+  grunt.registerTask('push', function() {
+    grunt.task.requires('test');
+    grunt.task.run(['shell:prodServer']);
+  });
+
   grunt.registerTask('upload', function(n) {
+    grunt.task.run([ 'build' ]);
+
     if(grunt.option('prod')) {
-      // add your production server task here
+      grunt.task.run([ 'test', 'push' ])
     } else {
-      grunt.task.run([ 'server-dev' ]);
+      grunt.task.run([ 'test', 'server-dev' ]);
     }
   });
+
 
 
 };
