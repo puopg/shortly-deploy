@@ -12,6 +12,9 @@ var linkSchema = new mongoose.Schema({
 
 mongoose.model('Link', linkSchema);
 
+//The callback function creates the code for the shortened link by
+//hashing the link's url.
+//Function executes before link instance is saved.
 linkSchema.pre('save', function(next) {
    var shasum = crypto.createHash('sha1');
     shasum.update(this.url);

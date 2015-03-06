@@ -4,19 +4,19 @@ var Promise = require('bluebird');
 var mongoose = require('mongoose');
 
 var userSchema = new mongoose.Schema({
-    username: String,
-    password: String
+    username: { type: String, required: true, index: { unique: true  } },
+    password: { type: String, required: true }
 });
 
+
 userSchema.methods.comparePassword = function(attemptedPassword, callback) {
-  console.log("User attempted password: " + attemptedPassword);
-  console.log("User actual password: " + this.password);
   bcrypt.compare(attemptedPassword, this.password, function(err, isMatch) {
+    if (err) return callback(err);
     callback(isMatch);
   });
 };
 
-userSchema.pre('save', function (next) {
+userSchema.pre('save', function(next) {
   var cipher = Promise.promisify(bcrypt.hash);
   return cipher(this.password, null, null).bind(this)
     .then(function(hash) {
@@ -25,9 +25,13 @@ userSchema.pre('save', function (next) {
     });
 });
 
-mongoose.model('users', userSchema);
+var User = mongoose.model('users', userSchema);
 
-var User = mongoose.model('users');
+module.exports = User;
+
+
+// mongoose.model('users', userSchema);
+
 /*
 var User = db.Model.extend({
   tableName: 'users',
@@ -49,5 +53,4 @@ var User = db.Model.extend({
   }
 });
 */
-module.exports = User;
 
