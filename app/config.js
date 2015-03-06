@@ -1,6 +1,44 @@
 var Bookshelf = require('bookshelf');
 var path = require('path');
+var MongoClient = require('mongodb').MongoClient;
+var mongoose = require('mongoose');
 
+mongoose.connect('mongodb://localhost/test');
+
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function (callback) {
+  console.log("Connected to MongoDb");
+});
+
+// var urls = mongoose.Schema({
+//     url: String,
+//     base_url: String,
+//     code: String,
+//     title: String,
+//     visits: Number
+// });
+
+// var userSchema = mongoose.Schema({
+//     username: String,
+//     password: String
+// });
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+
+
+//------------ SQL Implementation ----------------------
 var db = Bookshelf.initialize({
   client: 'sqlite3',
   connection: {
@@ -41,5 +79,7 @@ db.knex.schema.hasTable('users').then(function(exists) {
     });
   }
 });
-
+*/
 module.exports = db;
+
+
